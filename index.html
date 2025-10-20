@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Diwali ✨</title>
+ 
+  <style>
+    :root{
+      --bg1: #0b1020;
+      --bg2: #2b0b1f;
+      --accent: #ffd166;
+      --glow: rgba(255,209,102,0.15);
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    body{
+      background: radial-gradient(circle at 10% 20%, rgba(255,140,0,0.08), transparent 10%),
+                  linear-gradient(180deg,var(--bg1) 0%, var(--bg2) 70%);
+      color: #fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(920px,96vw);
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border-radius:18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.02) inset;
+      padding:32px;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:24px;
+      align-items:center;
+      backdrop-filter: blur(6px);
+    }
+
+    .left{
+      padding:8px 12px;
+    }
+
+    h1{
+      margin:0 0 10px 0;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: 1px;
+      line-height:1.05;
+      text-shadow: 0 6px 22px rgba(0,0,0,0.6);
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .subtitle{
+      margin:0 0 18px 0;
+      color: #ffeecb;
+      font-size:16px;
+      opacity:0.95;
+    }
+
+    .message{
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:10px;
+      padding:18px;
+      font-size:16px;
+      color:#fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+      margin-bottom:18px;
+      line-height:1.6;
+    }
+    .actions{display:flex; gap:10px; flex-wrap:wrap;}
+    .btn{
+      padding:10px 14px;
+      border-radius:10px;
+      border: none;
+      cursor:pointer;
+      font-weight:600;
+      background: linear-gradient(180deg,#ffd166,#ffb703);
+      color:#2b0b1f;
+      box-shadow: 0 6px 18px rgba(255,167,38,0.12);
+    }
+    .btn.secondary{
+      background:transparent;
+      color:#ffd;
+      border:1px solid rgba(255,255,255,0.06);
+      font-weight:600;
+    }
+
+    /* Diya column */
+    .right{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+      position:relative;
+      height:100%;
+    }
+    .diya-wrap{
+      width:320px;
+      height:320px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,0.6));
+    }
+
+    /* simple decorative circle glow */
+    .glow{
+      position:absolute;
+      width:380px;
+      height:380px;
+      border-radius:50%;
+      background: radial-gradient(circle at 50% 40%, rgba(255,182,85,0.22), transparent 30%);
+      filter: blur(20px);
+      z-index:0;
+    }
+
+    /* center diya SVG container */
+    .diya{
+      width:220px;
+      height:220px;
+      z-index:2;
+      transform-origin:center;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float{
+      0%{transform: translateY(0px) rotate(-1deg)}
+      50%{transform: translateY(-8px) rotate(1deg)}
+      100%{transform: translateY(0px) rotate(-1deg)}
+    }
+
+    /* small twinkling lights across left area */
+    .sparkles{
+      position:absolute;
+      inset:12px 50% 12px 12px;
+      pointer-events:none;
+      z-index:1;
+    }
+    .sparkle{
+      position:absolute;
+      width:6px;height:6px;border-radius:50%;
+      background:var(--accent);
+      opacity:0.85;
+      filter: blur(0.6px);
+      animation: twinkle 2.4s infinite ease-in-out;
+    }
+    @keyframes twinkle{
+      0%{transform:scale(0.6);opacity:0.2}
+      50%{transform:scale(1.2);opacity:1}
+      100%{transform:scale(0.6);opacity:0.2}
+    }
+
+    /* fireworks canvas overlay */
+    canvas#fw{
+      position:absolute;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+    }
+
+    footer{
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color: rgba(255,255,255,0.6);
+      font-size:13px;
+      margin-top:6px;
+    }
+
+    /* small responsive */
+    @media (max-width:880px){
+      .card{grid-template-columns:1fr; padding:20px;}
+      .right{order:-1}
+      .diya-wrap{width:260px;height:260px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="greeting">
+    <canvas id="fw"></canvas>
+
+    <div class="left">
+      <h1 id="greeting">🪔 Happy Diwali</h1>
+      <p class="subtitle">May the glow of diyas bring joy, prosperity and happiness to you and your loved ones.</p>
+
+      <div class="message" id="msg">
+        In this auspicious festival of lights,
+        <br><strong>May this glow of joy, prosperity and happiness illuminate your days in the upcoming years.</strong>
+        <p style="margin-top:8px; font-size:14px; color: #fff8e6;">Personalize the wish and share it with friends and family.</p>
+      </div>
+
+      <div class="left">
+        Shri Chhatrapati Shivaji Maharaj College Of Engineering, Nepti Ahilyanagar.
+      </div>
+
+      <!-- <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+        <input id="Vaibhavi Pacharne" placeholder="Vaibhavi Pacharne" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff" />
+        <button class="btn" id="Vaibhavi Pacharne">Apply</button>
+      </div> -->
+
+      <!-- <div class="actions">
+        <button class="btn" id="shareWhatsapp">Share on WhatsApp</button>
+        <button class="btn secondary" id="downloadImage">Download Image</button>
+        <button class="btn secondary" id="toggleAudio">Play Music</button>
+      </div> -->
+
+<!-- <p style="margin-top:12px;color:rgba(255,255,255,0.6)">Tip: Click "Share on WhatsApp" to send the personalized message directly.</p> -->
+    </div>
+
+    <div class="right" aria-hidden="false">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="diya-wrap" aria-hidden="true">
+        <!-- Inline SVG diya -->
+        <svg class="diya" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diya">
+          <defs>
+            <radialGradient id="flameGrad" cx="35%" cy="25%">
+              <stop offset="0%" stop-color="#fff2a6"/>
+              <stop offset="40%" stop-color="#ffd166"/>
+              <stop offset="100%" stop-color="#ff6b6b"/>
+            </radialGradient>
+                  <linearGradient id="bowl" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#8b3a1a"/>
+              <stop offset="100%" stop-color="#ffb703"/>
+            </linearGradient>
+            <filter id="soft">
+              <feGaussianBlur stdDeviation="6" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- flame glow -->
+          <ellipse cx="100" cy="56" rx="32" ry="18" fill="url(#flameGrad)" opacity="0.18" filter="url(#soft)"></ellipse>
+
+          <!-- flame shape -->
+          <path d="M100 42 C110 60, 120 66, 100 86 C80 66, 90 60, 100 42 Z" fill="url(#flameGrad)"/>
+
+          <!-- small inner flame -->
+          <path d="M100 48 C108 62, 115 66, 100 80 C85 66, 92 62, 100 48 Z" fill="#fff6c8" opacity="0.9"/>
+
+          <!-- bowl -->
+          <path d="M30 120 C40 160, 160 160, 170 120 C120 140, 80 140, 30 120 Z" fill="url(#bowl)"/>
+
+          <!-- oil reflection -->
+          <ellipse cx="100" cy="120" rx="55" ry="8" fill="rgba(255,255,255,0.05)"/>
+        </svg>
+      </div>
+
+      <div style="text-align:center; color:rgba(255,255,255,0.85); z-index:2;">
+        <strong style="display:block;font-size:18px">Wishing you</strong>
+        <span style="font-size:14px;color:#ffd;">Peace • Light • Prosperity</span>
+      </div>
+    </div>
+    <footer>
+      <div>Made By VAIBHAVI PACHARNE</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <small id="now"></small>
+      </div>
+    </footer>
+  </div>
+
+  <!-- optional audio (not autostarting) -->
+  <audio id="bgMusic" loop preload="none">
+    <!-- Replace with your own audio file if wanted -->
+    <source src="" />
+  </audio>
+
+  <script>
+    // show current date/time small
+    const nowEl = document.getElementById('now');
+    function updateTime(){ const d=new Date(); nowEl.textContent = d.toLocaleString(); }
+    updateTime(); setInterval(updateTime, 1000);
+
+    // simple personalized message
+    const nameInput = document.getElementById('nameInput');
+    const applyName = document.getElementById('applyName');
+    const msgEl = document.getElementById('msg');
+
+    applyName.addEventListener('click', ()=>{
+      const n = nameInput.value.trim();
+      if(n){
+        msgEl.innerHTML = Dear <strong>${escapeHtml(n)}</strong>,<br>May the glow of diyas bring joy, prosperity and happiness to you and your loved ones.;
+      } else {
+        msgEl.innerHTML = In this auspicious festival of lights,<br><strong>May this glow of joy, prosperity and happiness illuminate your days in the upcoming years.</strong>;
+      }
+    });
+
+    function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // WhatsApp share
+    const shareBtn = document.getElementById('shareWhatsapp');
+    shareBtn.addEventListener('click', ()=>{
+      const base = *Happy Diwali!* 🎆%0A;
+      const personalized = msgEl.textContent.trim();
+      const link = base + encodeURIComponent(personalized) + '%0A%0A' + encodeURIComponent('Wishing you a bright and joyous Diwali!');
+      const waUrl = https://wa.me/?text=${link};
+      window.open(waUrl, '_blank');
+    });
+
+    // download image (simple snapshot of card)
+    document.getElementById('downloadImage').addEventListener('click', async ()=>{
+      // use html2canvas-like minimal approach: draw simple canvas snapshot
+      // For better fidelity, recommend using html2canvas library; here we create a message screenshot fallback
+      const text = document.getElementById('greeting').textContent + '\\n' + document.getElementById('msg').innerText;
+      const c = document.createElement('canvas');
+      c.width = 1200; c.height = 630;
+      const ctx = c.getContext('2d');
+      // background
+      ctx.fillStyle = '#0b1020'; ctx.fillRect(0,0,c.width,c.height);
+      ctx.fillStyle = '#ffd'; ctx.font = 'bold 48px sans-serif'; ctx.fillText('🪔 Happy Diwali', 60,120);
+      ctx.font = '28px sans-serif';
+      wrapText(ctx, document.getElementById('msg').innerText, 60, 170, c.width-120, 34);
+      const a = document.createElement('a');
+      a.href = c.toDataURL('image/png');
+      a.download = 'happy-diwali.png';
+      a.click();
+
+      function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+        const words = text.split(' ');
+        let line = '';
+        for(let n=0;n<words.length;n++){
+          const testLine = line + words[n] + ' ';
+          const metrics = ctx.measureText(testLine);
+          if(metrics.width > maxWidth && n>0){
+            ctx.fillText(line, x, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, x, y);
+      }
+    });
+
+    // audio toggle (placeholder; no external audio by default)
+    const audio = document.getElementById('bgMusic');
+    const audioBtn = document.getElementById('toggleAudio');
+    let musicPlaying = false;
+    audioBtn.addEventListener('click', ()=>{
+      if(!musicPlaying){
+        // if no src, play a gentle tone using WebAudio
+        if(!audio.src){
+          playTone();
+          audioBtn.textContent = 'Stop Music';
+          musicPlaying = true;
+        } else {
+          audio.play(); audioBtn.textContent='Stop Music'; musicPlaying=true;
+        }
+      } else {
+        if(audio.src) audio.pause();
+        stopTone();
+        audioBtn.textContent='Play Music';
+        musicPlaying=false;
+      }
+    });
+
+    // Tiny tone generator for background if no audio file
+    let audioCtx, osc, gainNode;
+    function playTone(){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      osc = audioCtx.createOscillator();
+      gainNode = audioCtx.createGain();
+      osc.type = 'sine'; osc.frequency.value = 220;
+      gainNode.gain.value = 0.02;
+      osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+      osc.start();
+      // gentle detuned chords
+      setTimeout(()=>{ osc.frequency.value = 330; }, 800);
+    }
+    function stopTone(){
+      try{ osc.stop(); audioCtx.close(); }catch(e){}
+    }
+
+    // small sparkles positions
+    (function createSparkles(){
+      const container = document.createElement('div');
+      container.className = 'sparkles';
+      document.querySelector('.card').appendChild(container);
+      for(let i=0;i<16;i++){
+        const s = document.createElement('div');
+        s.className='sparkle';
+        s.style.left = (Math.random()*48)+'%';
+        s.style.top = (10 + Math.random()*70)+'%';
+        s.style.width = s.style.height = (4 + Math.random()*6)+'px';
+        s.style.animationDelay = (Math.random()*2)+'s';
+        container.appendChild(s);
+      }
+    })();
+
+    // fireworks - small simple implementation
+    (function fireworks(){
+      const c = document.getElementById('fw');
+      const card = document.querySelector('.card');
+      function resize(){ c.width = card.clientWidth*devicePixelRatio; c.height = card.clientHeight*devicePixelRatio; c.style.width = card.clientWidth+'px'; c.style.height = card.clientHeight+'px'; ctx.scale(devicePixelRatio, devicePixelRatio); }
+      const ctx = c.getContext('2d');
+      let particles = [];
+      function Particle(x,y,color){
+        this.x=x; this.y=y; this.vx=(Math.random()-0.5)*6; this.vy=(Math.random()-3.5)*6;
+        this.life=60 + Math.random()*40; this.color=color; this.size = 1+Math.random()*2;
+      }
+      Particle.prototype.update = function(){
+        this.vy += 0.12;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life--;
+      };
+      Particle.prototype.draw = function(){
+        ctx.globalAlpha = Math.max(0, this.life/80);
+        ctx.fillStyle = this.color;
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+      };
+
+      function spawn(x,y){
+        const colors = ['#ffd166','#ff6b6b','#8ae2ff','#b6ffb3','#ffd1ff'];
+        const color = colors[Math.floor(Math.random()*colors.length)];
+        for(let i=0;i<38;i++) particles.push(new Particle(x,y,color));
+      }
+
+      function loop(){
+        ctx.clearRect(0,0,c.width, c.height);
+        // draw particles
+        for(let i=particles.length-1;i>=0;i--){
+          const p = particles[i];
+          p.update();
+          p.draw();
+          if(p.life<=0) particles.splice(i,1);
+        }
+        requestAnimationFrame(loop);
+      }
+
+      // init
+      resize();
+      window.addEventListener('resize', ()=>{ ctx.setTransform(1,0,0,1,0,0); resize(); });
+
+      // random bursts on interval
+      setInterval(()=>{ const rect = card.getBoundingClientRect(); const x = 120 + Math.random()(rect.width-240); const y = 30 + Math.random()(rect.height/2); spawn(x, y); }, 900);
+
+      loop();
+    })();
+
+  </script>
+</body>
+</html>
